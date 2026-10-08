@@ -273,7 +273,8 @@ void Creature::startAutoWalk(const std::vector<Direction>& listDir)
 	}
 
 	listWalkDir = listDir;
-	// Only player click-walk (Game::playerAutoWalk) uses this overload. The client pre-walks
+	// Only player auto-walk (Game::playerAutoWalk: click-walk and walk-to-use/-move/-trade) uses
+	// this overload, so monster pace is untouched. The client pre-walks
 	// step 1 instantly, so waiting a full step here made the character stall after one tile.
 	// firstStep still honours any remaining walk delay, so pace is unchanged.
 	addEventWalk(true);
@@ -298,7 +299,13 @@ void Creature::addEventWalk(bool firstStep)
 
 	// Take first step right away, but still queue the next
 	if (ticks == 1) {
+		teleportedOnStep = false;
 		g_game.checkCreatureWalk(getID());
+		// A teleport or floor change on that step ends the walk (onCreatureMove -> stopEventWalk),
+		// but no event was queued yet for it to cancel, so don't queue one now.
+		if (teleportedOnStep) {
+			return;
+		}
 	}
 
 	eventWalk = g_scheduler.addEvent(createSchedulerTask(ticks, [id = getID()]() { g_game.checkCreatureWalk(id); }));
@@ -486,6 +493,7 @@ void Creature::onCreatureMove(Creature* creature, const Tile* newTile, const Pos
 				}
 			}
 		} else {
+			teleportedOnStep = true;
 			stopEventWalk();
 		}
 
