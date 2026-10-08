@@ -302,8 +302,9 @@ void Creature::addEventWalk(bool firstStep)
 		teleportedOnStep = false;
 		g_game.checkCreatureWalk(getID());
 		// A teleport or floor change on that step ends the walk (onCreatureMove -> stopEventWalk),
-		// but no event was queued yet for it to cancel, so don't queue one now.
-		if (teleportedOnStep) {
+		// but no event was queued yet for it to cancel, so don't queue one now. Likewise if
+		// something during that step already queued a walk event: a second would run in parallel.
+		if (teleportedOnStep || eventWalk != 0) {
 			return;
 		}
 	}
