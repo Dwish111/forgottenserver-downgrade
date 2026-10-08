@@ -273,7 +273,10 @@ void Creature::startAutoWalk(const std::vector<Direction>& listDir)
 	}
 
 	listWalkDir = listDir;
-	addEventWalk(listWalkDir.size() == 1);
+	// Only player click-walk (Game::playerAutoWalk) uses this overload. The client pre-walks
+	// step 1 instantly, so waiting a full step here made the character stall after one tile.
+	// firstStep still honours any remaining walk delay, so pace is unchanged.
+	addEventWalk(true);
 }
 
 void Creature::addEventWalk(bool firstStep)
