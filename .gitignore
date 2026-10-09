@@ -196,3 +196,4 @@ tfs
 
 # Others
 *.emmyrc.json
+backups/
