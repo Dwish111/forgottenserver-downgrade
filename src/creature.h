@@ -420,6 +420,7 @@ protected:
 	bool cancelNextWalk = false;
 	bool hasFollowPath = false;
 	bool forceUpdateFollowPath = false;
+	bool teleportedOnStep = false; // set by onCreatureMove, read by addEventWalk's immediate step
 	bool hiddenHealth = false;
 	bool canUseDefense = true;
 	bool movementBlocked = false;
